@@ -55,12 +55,36 @@ def getdetails(listaids):
     return
 
 
+def getVolume(Produto):
+    volumeRegex = re.compile("(\d+)([ ]*)(ml|litro|litros)+", re.IGNORECASE)
+    result = volumeRegex.findall(Produto)
+    if len(result) > 0:
+        volume = result[0][0]
+        volume = int(volume)
+        if "litro" in (item.lower() for item in result[0]):
+            volume *= 1000
+    else:
+        volume = "indeterminado"
+    return volume
+
+
+def getQuantidade(Produto):
+    volumeRegex = re.compile("( com )(\d+)", re.IGNORECASE)
+    result = volumeRegex.findall(Produto)
+    if len(result) > 0:
+        quantidade = result[0][1]
+        quantidade = int(quantidade)
+    else:
+        quantidade = 1
+    return quantidade
+
+
 def joganaplan():
     wb = Workbook()
     ws = wb.active
-    ws.append(["IDs", "Produtos", "Preço"])
+    ws.append(["IDs", "Produtos", "Preço", "Volume (ml)", "Quantidade"])
     for i in range(0, len(IDs)):
-        ws.append([IDs[i], Produtos[i], Preco[i]])
+        ws.append([IDs[i], Produtos[i], Preco[i], getVolume(Produtos[i]), getQuantidade(Produtos[i])])
     wb.save("Brejas.xlsx")
     print("Salvo em Excel!")
     return
